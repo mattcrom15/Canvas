@@ -6,6 +6,10 @@ Canvas is a Cinema 4d Python script that allows you to import an image from a fi
 ## Installation
 to install, simply add the .py file to your scripts folder.
 
+with C4D open, Script > User Scripts > Script Folder...
+
+OR
+
 Windows: C:\Users\ "" YOUR USERNAME ""  \AppData\Roaming\MAXON\ "" YOUR VERSION OF C4D "" \library\scripts
 Mac: /Applications/MAXON/ "" YOUR VERSION OF C4D ""  /library/scripts
 
