@@ -28,7 +28,7 @@ easy to understand. if you click 'cancel' or the 'x' close icon, the material an
 
 ## C4D Version 
 
-Currently tested on R19. If used on earlier/later versions please let me know so i can update this.
+Currently tested on R19-R22. If used on earlier/later versions please let me know so i can update this.
 
 
 
