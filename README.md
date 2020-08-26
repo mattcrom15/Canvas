@@ -4,9 +4,9 @@ Canvas is a Cinema 4d Python script that allows you to import an image from a fi
 Supports images with alpha. 
 
 ## Progress
-[x] alpha iamges supported
-[ ] support video files
-[ ] support image sequences
+[x] alpha iamges supported <br />
+[x] support video files <br />
+[ ] support image sequences <br />
 
 
 ## Installation
