@@ -37,31 +37,33 @@ def main():
     x = getsize[0]
     y = getsize[1]
     
-    c = bm.GetChannelCount()
-    print(c)
-    
-    if c > 0:
-        alpha_texture = c4d.BaseList2D(c4d.Xbitmap)    ##create shader
-        alpha_texture[c4d.BITMAPSHADER_FILENAME] = img    ##add image to shader 
+    alphaCheck = bm.GetChannelCount()
+
+    ### check if image has alpha channel
+    if alphaCheck > 0:
+        ### Create alpha shader
+        alpha_texture = c4d.BaseList2D(c4d.Xbitmap)    
+        alpha_texture[c4d.BITMAPSHADER_FILENAME] = img   
         mat[c4d.MATERIAL_ALPHA_SHADER]= alpha_texture        
         mat.InsertShader(alpha_texture)
+        doc.AddUndo(c4d.UNDOTYPE_NEW, alpha_texture)
     else:
         pass
 
-    
+    ### create plane
     plane = c4d.BaseObject(5168)
     plane[c4d.PRIM_PLANE_SUBW] = 1
     plane[c4d.PRIM_PLANE_SUBH] = 1
     plane[c4d.PRIM_PLANE_WIDTH] = x
     plane[c4d.PRIM_PLANE_HEIGHT] = y
     doc.InsertObject(plane)
-    
+    ##assign texture tag to plane
     tag = plane.MakeTag(c4d.Ttexture)
     tag[c4d.TEXTURETAG_PROJECTION] = 6
     tag[c4d.TEXTURETAG_MATERIAL]= mat
     
     ## edit name
-    if msg == None:
+    if msg in(None,'Material Name?'):
         mat[c4d.ID_BASELIST_NAME] = fname
         plane[c4d.ID_BASELIST_NAME] = fname
     else:
@@ -71,7 +73,6 @@ def main():
     ##update undos
     doc.AddUndo(c4d.UNDOTYPE_NEW, plane)
     doc.AddUndo(c4d.UNDOTYPE_NEW, mat)
-    doc.AddUndo(c4d.UNDOTYPE_NEW, alpha_texture)
     doc.AddUndo(c4d.UNDOTYPE_NEW, shdr_texture)
     doc.EndUndo()
     ##add to file
