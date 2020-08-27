@@ -1,7 +1,7 @@
 # Canvas
 
 Canvas is a Cinema 4d Python script that allows you to import an image from a file location and turns it into a 3D plane.
-Supports images with alpha, video and image sequences
+Supports images with alpha, video and image sequences.
 
 ## Canvas-image
 
@@ -14,7 +14,6 @@ Canvas-video allows you to import video files into Cinema 4D. When the script is
 ## Canvas-sequence
 
 Canvas-sequence allows you to import image sequences into Cinema 4D. When the script is run, a file dialog will pop up. choose the first frame from your animation. Finally, input your framerate and give the material/plane an name. 
-
 
 ## Progress
 [x] alpha iamges supported <br />
