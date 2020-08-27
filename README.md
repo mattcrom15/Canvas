@@ -5,7 +5,7 @@ Supports images with alpha, video and image sequences
 
 ## Canvas-image
 
-Canvas-imag allows you to import image file into Cinema 4D. When the script is run, a file dialog will pop up. choose the image file. Finally give the material/plane an name. If the image has an alpha channel, Canvas will add it to the material. 
+Canvas-image allows you to import image file into Cinema 4D. When the script is run, a file dialog will pop up. choose the image file. Finally give the material/plane an name. If the image has an alpha channel, Canvas will add it to the material. 
 
 ## Canvas-video
 
