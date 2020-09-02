@@ -152,12 +152,12 @@ def CanvasImage():
 
 class mainDialog(c4d.gui.GeDialog): 
     def CreateLayout(self):
-        self.SetTitle('Canvas') 
+        self.SetTitle('C A N V A S') 
         self.AddStaticText(102,c4d.BFH_CENTER,280,15,'Click on a Canvas type below',0)
         self.GroupBegin(id=0, flags=c4d.BFH_SCALEFIT, rows=1, title="", cols=3, groupflags=0)
         self.Imagebtn = self.AddButton(1003, c4d.BFH_CENTER, 60, 10, "Image") 
         self.Videobtn = self.AddButton(1004, c4d.BFH_CENTER, 60, 10, "Video") 
-        self.Sequencebtn = self.AddButton(1005, c4d.BFH_CENTER, 120, 10, "Image Sequence") 
+        self.Sequencebtn = self.AddButton(1005, c4d.BFH_CENTER, 140, 10, "Image Sequence") 
         self.Enable(1001,True)
         return True
     
@@ -180,7 +180,7 @@ class mainDialog(c4d.gui.GeDialog):
     
 def main():
     main_dlg = mainDialog() #instance mainDialog clas
-    main_dlg.Open(dlgtype=c4d.DLG_TYPE_MODAL, defaultw=300, defaulth=100, xpos=-1, ypos=-1) #open main_dialog
+    main_dlg.Open(dlgtype=c4d.DLG_TYPE_MODAL, defaultw=280, defaulth=100, xpos=-1, ypos=-1) #open main_dialog
     c4d.EventAdd()
 if __name__=='__main__':
     main() # run
