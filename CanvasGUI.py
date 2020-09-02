@@ -32,14 +32,17 @@ def Material(img):
     doc.InsertMaterial(mat)
     return mat 
 
-def alphaCheck(mat,bm,img):
+def alphaCheck(mat,bm,img,anim,frames,fps):
     
     alphaCheck = bm.GetChannelCount()
     ### check if image has alpha channel
     if alphaCheck > 0:
         ### Create alpha shader
         alpha_texture = c4d.BaseList2D(c4d.Xbitmap)    
-        alpha_texture[c4d.BITMAPSHADER_FILENAME] = img   
+        alpha_texture[c4d.BITMAPSHADER_FILENAME] = img  
+        if anim == True:
+            alpha_texture[c4d.BITMAPSHADER_TIMING_TO] = frames 
+            alpha_texture[c4d.BITMAPSHADER_TIMING_FPS] = float(fps)
         mat[c4d.MATERIAL_ALPHA_SHADER]= alpha_texture        
         mat.InsertShader(alpha_texture)
         doc.AddUndo(c4d.UNDOTYPE_NEW, alpha_texture)
@@ -47,10 +50,13 @@ def alphaCheck(mat,bm,img):
         pass
 
 
-def materialShader(mat,img):
+def materialShader(mat,img,anim,frame,fps):
     shdr_texture = c4d.BaseList2D(c4d.Xbitmap)   
     shdr_texture[c4d.BITMAPSHADER_FILENAME] = img    
-    mat[c4d.MATERIAL_LUMINANCE_SHADER]= shdr_texture        
+    mat[c4d.MATERIAL_LUMINANCE_SHADER]= shdr_texture
+    if anim == True:
+        shdr_texture[c4d.BITMAPSHADER_TIMING_TO] = frame
+        shdr_texture[c4d.BITMAPSHADER_TIMING_FPS] = float(fps)      
     mat.InsertShader(shdr_texture)
      #create bitmap
     bm = c4d.bitmaps.BaseBitmap()
@@ -58,7 +64,7 @@ def materialShader(mat,img):
     getsize = bm.GetSize()
     x = getsize[0]
     y = getsize[1]
-    alphaCheck(mat,bm,img)
+    alphaCheck(mat,bm,img,anim,frame,fps)
     bmSize = [x,y]
     doc.AddUndo(c4d.UNDOTYPE_NEW, shdr_texture)
     return bmSize
@@ -78,9 +84,46 @@ def CanvasSequence():
         fps = gui.InputDialog('Framerate')
         #get filename
         fname, ext = filename.split('.')
+        name = gui.InputDialog('Material Name')
+        m = Material(img)
+        ms = materialShader(m,img,True,frames,fps)
+        p = ImagePlane(m,name,ms)
+        if name in(None,'Material Name?'):
+            m[c4d.ID_BASELIST_NAME] = fname
+            p[c4d.ID_BASELIST_NAME] = fname
+           
+        else:
+            m[c4d.ID_BASELIST_NAME] = name
+            p[c4d.ID_BASELIST_NAME] = name
 
 def CanvasVideo():
-    pass
+    img = storage.LoadDialog() 
+    if not img:
+        return 'Canvas Cancelled.'
+    else:
+        path, filename = os.path.split(img)
+        #get filename
+        fname, ext = filename.split('.')
+
+        #load movie
+        if not ext in ('mp4','avi'):
+            gui.MessageDialog('file format .' + ext +'  not supported!')
+        else:
+            mov = c4d.bitmaps.MovieLoader()
+            mov.Open(img)
+
+            frame, fps = mov.GetInfo()
+            name = gui.InputDialog('Material Name')
+            m = Material(img)
+            ms = materialShader(m,img,True,frame,fps)
+            p = ImagePlane(m,name,ms)
+            if name in(None,'Material Name?'):
+                m[c4d.ID_BASELIST_NAME] = fname
+                p[c4d.ID_BASELIST_NAME] = fname
+
+            else:
+                m[c4d.ID_BASELIST_NAME] = name
+                p[c4d.ID_BASELIST_NAME] = name
 
 def CanvasImage():
      img = storage.LoadDialog() 
@@ -92,7 +135,7 @@ def CanvasImage():
         fname, ext = filename.split('.')
         name = gui.InputDialog('Material Name')
         m = Material(img)
-        ms = materialShader(m,img)
+        ms = materialShader(m,img,False,0,0)
         p = ImagePlane(m,name,ms)
         if name in(None,'Material Name?'):
             m[c4d.ID_BASELIST_NAME] = fname
@@ -120,14 +163,18 @@ class mainDialog(c4d.gui.GeDialog):
     
     def Command(self,id,msg): #listen for user clicks
         c4d.StopAllThreads()
+        doc.StartUndo()
         if id==1004:
             print('video')
+            CanvasVideo()
         elif id ==1003:
-            doc.StartUndo()
             print('image')
             CanvasImage()
         else:
             print('image sequence')
+            CanvasSequence()
+        self.Close()
+        doc.EndUndo()
         return True
 
     
