@@ -177,10 +177,11 @@ class mainDialog(c4d.gui.GeDialog):
         doc.EndUndo()
         return True
 
+
     
 def main():
-    main_dlg = mainDialog() #instance mainDialog clas
-    main_dlg.Open(dlgtype=c4d.DLG_TYPE_MODAL, defaultw=280, defaulth=100, xpos=-1, ypos=-1) #open main_dialog
+    dialog = mainDialog() 
+    dialog.Open(dlgtype=c4d.DLG_TYPE_MODAL, defaultw=280, defaulth=100, xpos=-1, ypos=-1) 
     c4d.EventAdd()
 if __name__=='__main__':
     main() # run
