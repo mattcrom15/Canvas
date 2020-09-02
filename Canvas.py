@@ -1,8 +1,17 @@
+'''
+C A N V A S
+Import and image, video or image sequnece into Cinema 4D and automatically add it to a plane.
+
+Created by Matt Cromwell
+
+
+'''
+
+
+
 import c4d
 from c4d import gui, storage
 import os
-
-
 
 def ImagePlane(mat,name,bmSize):
     ### create plane
