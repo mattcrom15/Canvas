@@ -28,11 +28,15 @@ def ImagePlane(mat,name,bmSize):
     doc.AddUndo(c4d.UNDOTYPE_NEW, plane)
     return plane
 
-def Material(img):
+def Material(img,coloverride):
     #create material
-    mat = c4d.BaseMaterial(5703)   
-    mat[c4d.MATERIAL_USE_COLOR] = False
-    mat[c4d.MATERIAL_USE_LUMINANCE] = True
+    mat = c4d.BaseMaterial(5703)  
+    if coloverride == True:
+          mat[c4d.MATERIAL_USE_COLOR] = True
+          mat[c4d.MATERIAL_USE_LUMINANCE] = False
+    else:
+        mat[c4d.MATERIAL_USE_COLOR] = False
+        mat[c4d.MATERIAL_USE_LUMINANCE] = True
     mat[c4d.MATERIAL_USE_ALPHA] = True
     mat[c4d.MATERIAL_USE_REFLECTION] = False
     mat[c4d.MATERIAL_PREVIEWSIZE] = + 12
@@ -59,10 +63,13 @@ def alphaCheck(mat,bm,img,anim,frames,fps):
         pass
 
 
-def materialShader(mat,img,anim,frame,fps):
+def materialShader(mat,img,anim,frame,fps,coloverride):
     shdr_texture = c4d.BaseList2D(c4d.Xbitmap)   
-    shdr_texture[c4d.BITMAPSHADER_FILENAME] = img    
-    mat[c4d.MATERIAL_LUMINANCE_SHADER]= shdr_texture
+    shdr_texture[c4d.BITMAPSHADER_FILENAME] = img
+    if coloverride == True:
+         mat[c4d.MATERIAL_COLOR_SHADER]= shdr_texture
+    else:
+         mat[c4d.MATERIAL_LUMINANCE_SHADER]= shdr_texture
     if anim == True:
         shdr_texture[c4d.BITMAPSHADER_TIMING_TO] = frame
         shdr_texture[c4d.BITMAPSHADER_TIMING_FPS] = float(fps)      
@@ -79,7 +86,7 @@ def materialShader(mat,img,anim,frame,fps):
     return bmSize
 
 
-def CanvasSequence():
+def CanvasSequence(coloverride):
     img = storage.LoadDialog() 
     if not img:
         return 'Canvas Cancelled.'
@@ -94,8 +101,8 @@ def CanvasSequence():
         #get filename
         fname, ext = filename.split('.')
         name = gui.InputDialog('Material Name')
-        m = Material(img)
-        ms = materialShader(m,img,True,frames,fps)
+        m = Material(img,coloverride)
+        ms = materialShader(m,img,True,frames,fps,coloverride)
         p = ImagePlane(m,name,ms)
         if name in(None,'Material Name?'):
             m[c4d.ID_BASELIST_NAME] = fname
@@ -105,7 +112,7 @@ def CanvasSequence():
             m[c4d.ID_BASELIST_NAME] = name
             p[c4d.ID_BASELIST_NAME] = name
 
-def CanvasVideo():
+def CanvasVideo(coloverride):
     img = storage.LoadDialog() 
     if not img:
         return 'Canvas Cancelled.'
@@ -123,8 +130,8 @@ def CanvasVideo():
 
             frame, fps = mov.GetInfo()
             name = gui.InputDialog('Material Name')
-            m = Material(img)
-            ms = materialShader(m,img,True,frame,fps)
+            m = Material(img,coloverride)
+            ms = materialShader(m,img,True,frame,fps,coloverride)
             p = ImagePlane(m,name,ms)
             if name in(None,'Material Name?'):
                 m[c4d.ID_BASELIST_NAME] = fname
@@ -134,7 +141,7 @@ def CanvasVideo():
                 m[c4d.ID_BASELIST_NAME] = name
                 p[c4d.ID_BASELIST_NAME] = name
 
-def CanvasImage():
+def CanvasImage(coloverride):
      img = storage.LoadDialog() 
      if not img:
         return 'Canvas Cancelled.'
@@ -143,8 +150,8 @@ def CanvasImage():
         #get filename
         fname, ext = filename.split('.')
         name = gui.InputDialog('Material Name')
-        m = Material(img)
-        ms = materialShader(m,img,False,0,0)
+        m = Material(img,coloverride)
+        ms = materialShader(m,img,False,0,0,coloverride)
         p = ImagePlane(m,name,ms)
         if name in(None,'Material Name?'):
             m[c4d.ID_BASELIST_NAME] = fname
@@ -163,6 +170,7 @@ class mainDialog(c4d.gui.GeDialog):
     def CreateLayout(self):
         self.SetTitle('C A N V A S') 
         self.AddStaticText(102,c4d.BFH_CENTER,280,15,'Click on a Canvas type below',0)
+        self.checkbox = self.AddCheckbox(103,c4d.BFH_CENTER,280,32,'Colour Channel override')
         self.GroupBegin(id=0, flags=c4d.BFH_SCALEFIT, rows=1, title="", cols=3, groupflags=0)
         self.Imagebtn = self.AddButton(1003, c4d.BFH_CENTER, 60, 10, "Image") 
         self.Videobtn = self.AddButton(1004, c4d.BFH_CENTER, 60, 10, "Video") 
@@ -173,16 +181,19 @@ class mainDialog(c4d.gui.GeDialog):
     def Command(self,id,msg): #listen for user clicks
         c4d.StopAllThreads()
         doc.StartUndo()
+        checkbox = self.GetBool(103)
         if id==1004:
             print('video')
-            CanvasVideo()
+            CanvasVideo(checkbox)
+            self.Close()
         elif id ==1003:
             print('image')
-            CanvasImage()
-        else:
+            CanvasImage(checkbox)
+            self.Close()
+        elif id ==1005:
             print('image sequence')
-            CanvasSequence()
-        self.Close()
+            CanvasSequence(checkbox)
+            self.Close()
         doc.EndUndo()
         return True
 
